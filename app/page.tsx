@@ -2,6 +2,7 @@ import { CameraBackdrop } from "./components/CameraBackdrop";
 import { Scoreboard } from "./components/Scoreboard";
 import { OddsMatrix } from "./components/OddsMatrix";
 import { ConsensusIndicator } from "./components/ConsensusIndicator";
+import { MockHedgeModal } from "./components/MockHedgeModal";
 import { TxLineProvider } from "@/lib/txline/TxLineProvider";
 
 export default function Home() {
@@ -17,7 +18,8 @@ export default function Home() {
         <ConsensusIndicator />
 
         {/* z30 — RiskAlertSheet (Phase 3a — placeholder) */}
-        {/* z40 — BlinkHedgeCard (Phase 3b — placeholder) */}
+        {/* z40 — BlinkHedgeCard / MockHedgeModal */}
+        <MockHedgeModal />
         {/* z50 — Permission/wallet modals (placeholder) */}
       </main>
     </TxLineProvider>
