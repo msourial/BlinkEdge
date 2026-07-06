@@ -30,7 +30,11 @@ Built for the **FIFA Solana 2026 Hackathon**.
 
 ## Demo
 
-> **Live:** _Deployed URL will appear here after Vercel deploy._
+**Live:** [https://blinkedge.vercel.app](https://blinkedge.vercel.app)
+
+**Action endpoint:** [https://blinkedge.vercel.app/api/actions/hedge/wc-2026-final](https://blinkedge.vercel.app/api/actions/hedge/wc-2026-final)
+
+**Validate with Blinks Inspector:** [https://dial.to/developer?url=https://blinkedge.vercel.app/api/actions/hedge/wc-2026-final](https://dial.to/developer?url=https://blinkedge.vercel.app/api/actions/hedge/wc-2026-final)
 
 **Phase 1 + Phase 3b (current):** Camera feed + AR HUD overlays + live risk engine + one-tap Solana Blink hedge on devnet.
 
