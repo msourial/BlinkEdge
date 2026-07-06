@@ -1,13 +1,25 @@
+import { CameraBackdrop } from "./components/CameraBackdrop";
+import { Scoreboard } from "./components/Scoreboard";
+import { OddsMatrix } from "./components/OddsMatrix";
+import { ConsensusIndicator } from "./components/ConsensusIndicator";
+import { TxLineProvider } from "@/lib/txline/TxLineProvider";
+
 export default function Home() {
   return (
-    <main className="fixed inset-0 h-[100dvh] w-screen overflow-hidden bg-canvas flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4" style={{ color: "var(--color-primary)" }}>
-          BlinkEdge
-        </h1>
-        <p className="text-ink-muted">NeonChrome design system loaded.</p>
-        <p className="text-ink-faint text-sm mt-2">Camera + HUD widgets coming next.</p>
-      </div>
-    </main>
+    <TxLineProvider>
+      <main className="fixed inset-0 h-[100dvh] w-screen overflow-hidden bg-canvas">
+        {/* z0 — Camera video feed (opaque, direct child of shell) */}
+        <CameraBackdrop />
+
+        {/* z20 — HUD widgets (translucent, direct siblings of video — NOT wrapped in scrim) */}
+        <Scoreboard />
+        <OddsMatrix />
+        <ConsensusIndicator />
+
+        {/* z30 — RiskAlertSheet (Phase 3a — placeholder) */}
+        {/* z40 — BlinkHedgeCard (Phase 3b — placeholder) */}
+        {/* z50 — Permission/wallet modals (placeholder) */}
+      </main>
+    </TxLineProvider>
   );
 }
