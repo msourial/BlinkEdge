@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  /* === NeonChrome Color Palette === */
+
+  /* Neon Accents — one per component, never mix */
+  --color-primary: #00f0ff;
+  --color-primary-glow: rgba(0, 240, 255, 0.45);
+  --color-primary-glow-wide: rgba(0, 240, 255, 0.15);
+  --color-primary-on: #000000;
+
+  --color-magenta: #ff00e5;
+  --color-magenta-glow: rgba(255, 0, 229, 0.45);
+  --color-magenta-glow-wide: rgba(255, 0, 229, 0.15);
+
+  --color-acid: #39ff14;
+  --color-acid-glow: rgba(57, 255, 20, 0.45);
+  --color-acid-glow-wide: rgba(57, 255, 20, 0.15);
+
+  --color-violet: #b44dff;
+  --color-violet-glow: rgba(180, 77, 255, 0.45);
+
+  --color-amber: #ffb800;
+  --color-amber-glow: rgba(255, 184, 0, 0.40);
+  --color-amber-glow-wide: rgba(255, 184, 0, 0.12);
+
+  /* Surfaces — dark chrome tiers */
+  --color-canvas: #0a0a0f;
+  --color-surface-chrome: #111118;
+  --color-surface-raised: #16161f;
+  --color-surface-overlay: #1c1c28;
+  --color-surface-deep: #06060a;
+
+  /* Chrome Borders */
+  --color-chrome-border: rgba(255, 255, 255, 0.06);
+  --color-chrome-border-strong: rgba(255, 255, 255, 0.12);
+
+  /* Text */
+  --color-ink: #e8eaed;
+  --color-ink-body: rgba(232, 234, 237, 0.82);
+  --color-ink-muted: rgba(232, 234, 237, 0.55);
+  --color-ink-faint: #55575e;
+  --color-ink-ghost: #3a3c44;
+
+  /* Semantic */
+  --color-success: #39ff14;
+  --color-warning: #ffb800;
+  --color-error: #ff00e5;
+  --color-info: #00f0ff;
+
+  /* === Typography === */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+
+  /* === Spacing (4/8px rhythm) === */
+  --spacing-xxs: 2px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 48px;
+
+  /* === Border Radius === */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* === Glow Box-Shadows (depth = glow, NOT drop shadows) === */
+  --glow-sm: 0 0 6px;
+  --glow-md: 0 0 12px;
+  --glow-lg: 0 0 20px;
+  --glow-xl: 0 0 32px;
+  --glow-spread-sm: 0 0 6px, 0 0 12px;
+  --glow-spread-md: 0 0 8px, 0 0 20px, 0 0 40px;
+  --glow-spread-lg: 0 0 12px, 0 0 24px, 0 0 48px, 0 0 80px;
+  --glow-inset: inset 0 0 12px;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    overflow: hidden;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  /* Touch targets — min 44px on mobile */
+  button,
+  [role="button"],
+  a {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* === HUD Widget Card (card-neon variant) === */
+  .hud-card {
+    background: rgba(10, 10, 15, 0.35);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    will-change: backdrop-filter;
+    contain: layout paint;
+    box-shadow: var(--glow-spread-sm), var(--glow-inset) var(--color-primary-glow-wide);
+    padding: var(--spacing-lg);
+  }
+
+  .hud-card-magenta {
+    border-color: var(--color-magenta);
+    box-shadow: var(--glow-spread-sm), var(--glow-inset) var(--color-magenta-glow-wide);
+  }
+
+  .hud-card-acid {
+    border-color: var(--color-acid);
+    box-shadow: var(--glow-spread-sm), var(--glow-inset) var(--color-acid-glow-wide);
+  }
+
+  .hud-card-amber {
+    border-color: var(--color-amber);
+    box-shadow: var(--glow-spread-sm), var(--glow-inset) var(--color-amber-glow-wide);
+  }
+
+  /* === Neon Button (button-neon-cyan) === */
+  .btn-neon {
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    border-radius: var(--radius-md);
+    padding: 10px 24px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1;
+    box-shadow: var(--glow-spread-md);
+    transition: box-shadow 200ms ease;
+    cursor: pointer;
+    min-height: 44px;
+  }
+
+  .btn-neon:hover {
+    box-shadow: var(--glow-spread-lg);
+  }
+
+  .btn-neon-amber {
+    border-color: var(--color-amber);
+    color: var(--color-amber);
+    box-shadow: var(--glow-spread-md);
+  }
+
+  /* === Text shadow halo for legibility over video === */
+  .text-halo {
+    text-shadow: 0 0 4px rgba(10, 10, 15, 0.9);
+  }
+}
+
+/* === Utility classes === */
+.bg-canvas {
+  background-color: var(--color-canvas);
+}
+
+.text-ink {
+  color: var(--color-ink);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Safe-area insets */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-right {
+  padding-right: env(safe-area-inset-right);
+}
