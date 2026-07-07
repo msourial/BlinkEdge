@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: blinkedge
+    runtime: node
+    repo: https://github.com/msourial/BlinkEdge.git
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /manifest.webmanifest
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: PORT
+        value: "10000"
