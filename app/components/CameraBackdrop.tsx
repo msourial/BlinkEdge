@@ -120,42 +120,79 @@ export function CameraBackdrop() {
 
       {showGate && (
         <div
-          className="hud-card absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-xs w-[90%] sm:w-80 px-6 py-6"
+          className="hud-card absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-sm w-[92%] sm:w-96 px-7 py-8"
           style={{
             zIndex: 15,
             borderColor: state === "denied" || state === "error" ? "var(--color-amber)" : "var(--color-primary)",
             boxShadow:
               state === "denied" || state === "error"
                 ? "0 0 8px, 0 0 24px var(--color-amber-glow-wide), inset 0 0 12px var(--color-amber-glow-wide)"
-                : "0 0 8px, 0 0 24px var(--color-primary-glow-wide), inset 0 0 12px var(--color-primary-glow-wide)",
-            backgroundColor: "rgba(10,10,15,0.88)",
+                : "0 0 12px, 0 0 40px var(--color-primary-glow-wide), inset 0 0 16px var(--color-primary-glow-wide)",
+            backgroundColor: "rgba(10,10,15,0.95)",
           }}
         >
           {state === "idle" && (
             <div className="text-center">
+              {/* Big camera icon */}
+              <div
+                className="mx-auto mb-4 flex items-center justify-center"
+                style={{
+                  width: "72px",
+                  height: "72px",
+                  borderRadius: "50%",
+                  background: "rgba(0,240,255,0.08)",
+                  border: "2px solid var(--color-primary)",
+                  boxShadow: "0 0 20px var(--color-primary-glow), inset 0 0 12px var(--color-primary-glow-wide)",
+                }}
+              >
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--color-primary)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4" />
+                </svg>
+              </div>
               <h2
-                className="text-lg font-bold mb-2 text-halo"
+                className="text-xl font-bold mb-2 text-halo"
                 style={{ color: "var(--color-primary)" }}
               >
                 Enable Camera
               </h2>
-              <p className="text-ink-muted mb-4 text-xs text-halo leading-relaxed">
+              <p className="text-ink-muted mb-5 text-sm text-halo leading-relaxed">
                 Point your phone at the TV to see live match data floating over the broadcast.
               </p>
               <button
                 onClick={startCamera}
-                className="btn-neon w-full"
-                style={{ minHeight: "44px" }}
+                className="btn-neon w-full text-base"
+                style={{ minHeight: "48px", padding: "12px 24px", fontWeight: 700 }}
               >
-                Enable Camera
+                📷 Enable Camera
               </button>
-              <button
-                onClick={skipCamera}
-                className="text-[11px] underline mt-3"
-                style={{ color: "var(--color-ink-muted)", minHeight: "auto", padding: "2px 6px" }}
-              >
-                Skip — use gradient backdrop
-              </button>
+              <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--color-chrome-border)" }}>
+                <p className="text-[11px] text-ink-faint mb-2 text-halo">No camera? No problem.</p>
+                <button
+                  onClick={skipCamera}
+                  className="text-xs font-semibold"
+                  style={{
+                    color: "var(--color-amber)",
+                    minHeight: "auto",
+                    padding: "6px 12px",
+                    border: "1px solid var(--color-amber)",
+                    borderRadius: "6px",
+                    background: "transparent",
+                    boxShadow: "0 0 8px var(--color-amber-glow-wide)",
+                  }}
+                >
+                  Skip — explore with gradient backdrop
+                </button>
+              </div>
             </div>
           )}
 
