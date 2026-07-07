@@ -5,13 +5,14 @@ import { solanaService } from "@/lib/solana/SolanaTransactionService";
 const DEVNET_CLUSTER = "devnet";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ marketId: string }> }
 ) {
   const { marketId } = await params;
 
+  const origin = new URL(request.url).origin;
   const actionGetResponse = {
-    icon: "https://blinkedge.app/icon.svg",
+    icon: `${origin}/icon`,
     label: `Hedge bet on ${marketId}`,
     title: "Blink Hedge — Devnet",
     description:
