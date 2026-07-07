@@ -12,7 +12,7 @@ export function OddsMatrix() {
 
   return (
     <div
-      className="hud-card hud-card-magenta safe-right absolute right-0 top-1/2 -translate-y-1/2 w-44"
+      className="hud-card hud-card-magenta safe-right absolute right-0 top-1/2 -translate-y-1/2 w-52 sm:w-56"
       style={{
         zIndex: 20,
         borderColor: "var(--color-magenta)",
@@ -20,36 +20,36 @@ export function OddsMatrix() {
           "0 0 6px, 0 0 12px, inset 0 0 8px var(--color-magenta-glow-wide)",
       }}
     >
-      <div className="px-3 py-3">
+      <div className="px-4 py-4 sm:px-5">
         <div
-          className="text-[10px] font-bold uppercase tracking-wider mb-2 text-halo"
+          className="text-xs font-bold uppercase tracking-wider mb-3 text-halo"
           style={{ color: "var(--color-magenta)" }}
         >
           ODDS
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-xs text-ink-muted text-halo font-mono">1</span>
+            <span className="text-sm text-ink-muted text-halo font-mono">1</span>
             <span
-              className="font-mono text-sm font-semibold text-halo"
+              className="font-mono text-base font-semibold text-halo"
               style={{ color: "var(--color-ink)" }}
             >
               {home}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-xs text-ink-muted text-halo font-mono">X</span>
+            <span className="text-sm text-ink-muted text-halo font-mono">X</span>
             <span
-              className="font-mono text-sm font-semibold text-halo"
+              className="font-mono text-base font-semibold text-halo"
               style={{ color: "var(--color-ink)" }}
             >
               {draw}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-xs text-ink-muted text-halo font-mono">2</span>
+            <span className="text-sm text-ink-muted text-halo font-mono">2</span>
             <span
-              className="font-mono text-sm font-semibold text-halo"
+              className="font-mono text-base font-semibold text-halo"
               style={{ color: "var(--color-ink)" }}
             >
               {away}
