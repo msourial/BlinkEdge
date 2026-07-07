@@ -10,7 +10,9 @@ export async function GET(
 ) {
   const { marketId } = await params;
 
-  const origin = new URL(request.url).origin;
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || "blinkedge.onrender.com";
+  const proto = request.headers.get("x-forwarded-proto") || "https";
+  const origin = `${proto}://${host}`;
   const actionGetResponse = {
     icon: `${origin}/icon`,
     label: `Hedge bet on ${marketId}`,
