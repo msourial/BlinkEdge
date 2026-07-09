@@ -63,15 +63,17 @@ Plans:
 ### Phase 2: Live Data
 **Goal**: Replace `mockData.ts` with the real TxODDS TxLINE-on-Solana data stream. Add manual match selection (or broadcast recognition) as fallback. Add a service worker for offline shell. Responsive enhancement at tablet/desktop breakpoints.
 **Depends on**: Phase 1
-**Requirements**: TBD (new REQ- IDs needed)
+**Requirements**: LIVE-01, LIVE-02, LIVE-03, OFFL-01, OFFL-02
 **Success Criteria** (what must be TRUE):
-  1. App consumes live TxLINE packets via the existing `TxLineSource` interface
-  2. User can select a match manually if broadcast recognition is unavailable
-  3. PWA loads an offline shell from a cached service worker
-**Plans**: TBD (not yet planned — needs discuss + plan-phase)
+   1. App consumes live TxLINE packets via the existing `TxLineSource` interface
+   2. User can select a match manually if broadcast recognition is unavailable
+   3. PWA loads an offline shell from a cached service worker
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01: Data Layer Foundation — config, auth, SSE source, adapter, app state machine, provider
+- [ ] 02-02: Service Worker — serwist install, offline shell, update banner, layout integration
+- [ ] 02-03: UI Components — MatchSelector, ApiStatusIndicator, DataErrorBanner, page.tsx integration
 
 ### Phase 4: Real SPL Hedge
 **Goal**: Upgrade the SystemProgram 1000-lamport hedge breadcrumb to a real SPL token vault instruction. Optionally add MWA v2.2.9 deep-link for mobile-only true one-tap UX. Add CI/CD pipeline (GitHub Actions runs 48 tests + typecheck on every PR).
