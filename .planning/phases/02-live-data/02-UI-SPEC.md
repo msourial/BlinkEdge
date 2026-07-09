@@ -22,7 +22,7 @@ created: 2026-07-09
 | Preset | not applicable |
 | Component library | none (all custom components in `app/components/`) |
 | Icon library | none (emoji used sparingly in permission/loading states; no icon dependency) |
-| Font | Inter (400, 600, 700, 800) + JetBrains Mono (400, 600) via `next/font/google` |
+| Font | Inter (400, 600) + JetBrains Mono (400, 600) via `next/font/google` |
 
 **Source:** globals.css `@theme` block + `layout.tsx` font loading. Not shadcn.
 
@@ -34,7 +34,7 @@ Declared values (multiples of 4, mapped to Tailwind v4 custom theme tokens):
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| xxs | 2px | Micro gaps, neon border inset |
+| xxs | 4px | Micro gaps, neon border inset |
 | xs | 4px | Icon gaps, inline padding |
 | sm | 8px | Compact element spacing, button padding |
 | md | 12px | Card content padding, grid gaps |
@@ -55,16 +55,16 @@ Exceptions: none — all existing HUD widgets follow this scale.
 |------|------|--------|-------------|------|
 | Body | 14px (text-sm) | 400 (regular) | 1.5 | Inter |
 | Label | 12px (text-xs) | 600 (semibold) | 1.4 | Inter |
-| Mono data | 14px–20px (text-sm to text-xl) | 400 or 600 | 1.4 | JetBrains Mono |
-| HUD heading | 10px (text-[10px]) | 700 (bold) | 1.2 | JetBrains Mono |
-| Display (scores) | 24px (text-2xl) | 700 (bold) or 800 (extrabold) | 1.2 | JetBrains Mono |
+| Mono data | 14px (text-sm) | 400 (regular) | 1.4 | JetBrains Mono |
+| Mono heading | 20px (text-xl) | 600 (semibold) | 1.2 | JetBrains Mono |
+| Display (scores) | 24px (text-2xl) | 600 (semibold) | 1.2 | JetBrains Mono |
 
-**Source of truth:** DSGN-06 (body weight 400, line-height ≥1.5), DSGN-08 (display clamps 36px → 24px mobile). All existing widget code uses these values.
+**Source of truth:** DSGN-06 (body weight 400, line-height ≥1.5), DSGN-08 (display clamps 36px → 24px mobile). All existing widget code updated to these values.
 
 **New for Phase 02:**
-- **Match list items:** 14px body weight 400, team name 14px semibold, time 12px muted
-- **Status indicator label:** 10px uppercase tracking-wider, weight 700, mono
-- **Error/offline headings:** 16px (text-base) weight 600 body, plus explanatory body at 12px
+- **Match list items:** 14px body weight 400, team name 14px weight 600 (semibold), time 12px weight 400 (muted)
+- **Status indicator label:** 12px (text-xs) uppercase tracking-wider, weight 600, mono font
+- **Error/offline headings:** 20px (text-xl) weight 600 mono, plus explanatory body at 14px (text-sm) weight 400
 
 ---
 
