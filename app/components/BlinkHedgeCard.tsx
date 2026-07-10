@@ -3,12 +3,13 @@
 import { useState, useCallback } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction } from "@solana/web3.js";
+import { WarningIcon, CheckIcon, XIcon, AlertCircleIcon, WalletIcon, SpinnerIcon } from "./ui/icons";
 
 type HedgeState = "idle" | "loading-metadata" | "ready" | "sending" | "pending" | "confirmed" | "error";
 
 export function BlinkHedgeCard({ marketId, onClose }: { marketId: string; onClose: () => void }) {
   const { connection } = useConnection();
-  const { connected, publicKey, sendTransaction } = useWallet();
+  const { connected, publicKey, select, wallets, sendTransaction } = useWallet();
   const [state, setState] = useState<HedgeState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [metadata, setMetadata] = useState<{ label: string; description: string } | null>(null);
@@ -112,21 +113,53 @@ export function BlinkHedgeCard({ marketId, onClose }: { marketId: string; onClos
         {state === "idle" && (
           <div className="px-6 py-6 text-center">
             <div
-              className="text-2xl font-bold mb-3 text-halo"
+              className="mx-auto mb-4 flex items-center justify-center"
+              style={{
+                width: "56px", height: "56px", borderRadius: "50%",
+                background: "rgba(255,184,0,0.1)",
+                border: "2px solid var(--color-amber)",
+                boxShadow: "0 0 20px var(--color-amber-glow-wide)",
+              }}
+            >
+              <WarningIcon size={28} className="text-amber" />
+            </div>
+            <div
+              className="text-xl font-bold mb-2 text-halo"
               style={{ color: "var(--color-amber)" }}
             >
-              ⚠ Hedge Available
+              Hedge Available
             </div>
-            <p className="text-sm text-ink-body mb-2 text-halo">
+            <p className="text-sm text-ink-body mb-1 text-halo">
               Risk detected on this market.
             </p>
             <p className="text-xs text-ink-faint mb-6 text-halo">
               Devnet only — no real funds at risk.
             </p>
+            {!connected && (
+              <div className="mb-5 p-3 rounded-lg" style={{ background: "rgba(0,240,255,0.06)", border: "1px solid var(--color-chrome-border)" }}>
+                <p className="text-xs text-ink-muted mb-2 text-halo">Connect a wallet to hedge.</p>
+                {wallets.length > 0 && (
+                  <button
+                    onClick={() => select(wallets[0].adapter.name)}
+                    className="text-xs font-semibold px-4 py-2 rounded-md transition-all duration-200 flex items-center gap-2 mx-auto"
+                    style={{
+                      color: "var(--color-primary)",
+                      border: "1px solid var(--color-primary)",
+                      background: "transparent",
+                      minHeight: "36px",
+                      boxShadow: "0 0 8px var(--color-primary-glow-wide)",
+                    }}
+                  >
+                    <WalletIcon size={14} className="text-primary" />
+                    Connect Wallet
+                  </button>
+                )}
+              </div>
+            )}
             <div className="flex gap-3 justify-center">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-semibold rounded-lg border"
+                className="px-4 py-2 text-sm font-semibold rounded-lg border transition-all duration-200 hover:bg-white/5"
                 style={{
                   borderColor: "var(--color-chrome-border-strong)",
                   color: "var(--color-ink-muted)",
@@ -137,8 +170,13 @@ export function BlinkHedgeCard({ marketId, onClose }: { marketId: string; onClos
               </button>
               <button
                 onClick={fetchMetadata}
+                disabled={!connected}
                 className="btn-neon btn-neon-amber"
-                style={{ minHeight: "44px" }}
+                style={{
+                  minHeight: "44px",
+                  opacity: connected ? 1 : 0.4,
+                  cursor: connected ? "pointer" : "not-allowed",
+                }}
               >
                 Hedge Now
               </button>
@@ -148,14 +186,8 @@ export function BlinkHedgeCard({ marketId, onClose }: { marketId: string; onClos
 
         {state === "loading-metadata" && (
           <div className="px-6 py-8 text-center">
-            <div
-              className="inline-block w-6 h-6 border-2 rounded-full animate-spin"
-              style={{
-                borderColor: "var(--color-amber)",
-                borderTopColor: "transparent",
-              }}
-            />
-            <p className="text-xs text-ink-faint mt-4 text-halo">
+            <SpinnerIcon size={24} className="mx-auto mb-4 text-amber" />
+            <p className="text-xs text-ink-faint text-halo">
               Loading Action metadata…
             </p>
           </div>
@@ -169,21 +201,35 @@ export function BlinkHedgeCard({ marketId, onClose }: { marketId: string; onClos
             >
               {metadata.label}
             </div>
-            <p className="text-xs text-ink-muted mb-2 text-halo">
+            <p className="text-xs text-ink-muted mb-3 text-halo">
               {metadata.description}
             </p>
             {!connected && (
-              <p
-                className="text-xs mb-4 text-halo"
-                style={{ color: "var(--color-magenta)" }}
-              >
-                ⚠ Connect wallet to continue
-              </p>
+              <div className="mb-4 p-3 rounded-lg" style={{ background: "rgba(255,0,229,0.06)", border: "1px solid var(--color-chrome-border)" }}>
+                <p className="text-xs mb-2 text-halo" style={{ color: "var(--color-magenta)" }}>
+                  Connect wallet to continue
+                </p>
+                {wallets.length > 0 && (
+                  <button
+                    onClick={() => select(wallets[0].adapter.name)}
+                    className="text-xs font-semibold px-4 py-2 rounded-md transition-all duration-200 inline-flex items-center gap-2"
+                    style={{
+                      color: "var(--color-primary)",
+                      border: "1px solid var(--color-primary)",
+                      background: "transparent",
+                      minHeight: "36px",
+                    }}
+                  >
+                    <WalletIcon size={14} className="text-primary" />
+                    Connect Wallet
+                  </button>
+                )}
+              </div>
             )}
             <div className="flex gap-3 justify-center mt-4">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-semibold rounded-lg border"
+                className="px-4 py-2 text-sm font-semibold rounded-lg border transition-all duration-200 hover:bg-white/5"
                 style={{
                   borderColor: "var(--color-chrome-border-strong)",
                   color: "var(--color-ink-muted)",
@@ -210,15 +256,9 @@ export function BlinkHedgeCard({ marketId, onClose }: { marketId: string; onClos
 
         {state === "pending" && (
           <div className="px-6 py-8 text-center">
-            <div
-              className="inline-block w-6 h-6 border-2 rounded-full animate-spin"
-              style={{
-                borderColor: "var(--color-amber)",
-                borderTopColor: "transparent",
-              }}
-            />
+            <SpinnerIcon size={24} className="mx-auto mb-4 text-amber" />
             <p
-              className="text-sm font-mono mt-4 text-halo"
+              className="text-sm font-mono text-halo"
               style={{ color: "var(--color-amber)" }}
             >
               Waiting for wallet signature…
@@ -229,12 +269,23 @@ export function BlinkHedgeCard({ marketId, onClose }: { marketId: string; onClos
         {state === "confirmed" && (
           <div className="px-6 py-6 text-center">
             <div
-              className="text-3xl font-bold mb-3 text-halo"
+              className="mx-auto mb-4 flex items-center justify-center"
+              style={{
+                width: "56px", height: "56px", borderRadius: "50%",
+                background: "rgba(57,255,20,0.1)",
+                border: "2px solid var(--color-acid)",
+                boxShadow: "0 0 20px var(--color-acid-glow-wide)",
+              }}
+            >
+              <CheckIcon size={28} className="text-acid" />
+            </div>
+            <div
+              className="text-xl font-bold mb-2 text-halo"
               style={{ color: "var(--color-acid)" }}
             >
-              ✓ Hedged
+              Hedged
             </div>
-            <p className="text-sm text-ink-body mb-2 text-halo">
+            <p className="text-sm text-ink-body mb-1 text-halo">
               Position hedged on devnet.
             </p>
             <p className="text-xs text-ink-faint mb-6 text-halo">
@@ -258,12 +309,22 @@ export function BlinkHedgeCard({ marketId, onClose }: { marketId: string; onClos
         {state === "error" && (
           <div className="px-6 py-6 text-center">
             <div
-              className="text-2xl font-bold mb-3 text-halo"
+              className="mx-auto mb-4 flex items-center justify-center"
+              style={{
+                width: "56px", height: "56px", borderRadius: "50%",
+                background: "rgba(255,0,229,0.1)",
+                border: "2px solid var(--color-magenta)",
+              }}
+            >
+              <XIcon size={28} className="text-magenta" />
+            </div>
+            <div
+              className="text-lg font-bold mb-2 text-halo"
               style={{ color: "var(--color-magenta)" }}
             >
-              ✗ Failed
+              Failed
             </div>
-            <p className="text-xs text-ink-muted mb-4 text-halo break-words">
+            <p className="text-xs text-ink-muted mb-5 text-halo break-words">
               {error}
             </p>
             <div className="flex gap-3 justify-center">

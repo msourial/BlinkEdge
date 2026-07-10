@@ -8,14 +8,14 @@ Watching a World Cup match on TV with a live bet in play means constantly splitt
 
 ## Why It's Needed
 
-Football betting is real-time, but the tools aren't. Fans watch on TV, bet on their phone, and manually juggle both. When a critical event happens — a red card at minute 67, a star player stretchered off — you have seconds to react before the odds shift. Existing apps show you data in isolation; they don't sit *on top* of what you're already watching and they don't act for you.
+Football betting is real-time, but the tools aren't. Fans watch on TV, bet on their phone, and manually juggle both. When a critical event happens — a red card at minute 67, a star player stretchered off — you have seconds to react before the odds shift. Existing apps show you data in isolation; they don't sit _on top_ of what you're already watching and they don't act for you.
 
 ## What BlinkEdge Does Differently
 
 BlinkEdge is not another sportsbook app or a second-screen dashboard. It's an **AR overlay for the broadcast itself**:
 
 - **Camera is the canvas.** Point your phone at the TV. Live score, odds, and consensus float directly over the match — no looking away, no context switch.
-- **Widgets are translucent.** The broadcast stays visible *through* the HUD panels. You don't lose the game.
+- **Widgets are translucent.** The broadcast stays visible _through_ the HUD panels. You don't lose the game.
 - **Event-driven risk detection.** When a red card or injury happens, the TxEdge engine catches it immediately and surfaces a hedge prompt — no polling, no manual refresh.
 - **One-tap hedge on Solana.** The hedge action is a Solana Blink — tap to sign, done. Wallet confirmation is the only extra step.
 - **NeonChrome design.** Dark chrome + neon glow makes the HUD readable over a bright TV broadcast without obscuring it.
@@ -142,15 +142,15 @@ TxLINE (mock/source) → TxLineProvider (React Context) → HUD Widgets
 
 ### Layer Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router) + TypeScript |
-| Styling | Tailwind CSS 4 + NeonChrome @theme tokens |
-| Validation | Zod (TxLineEventPacket schema) |
-| Camera | Web Media API (`getUserMedia`, `facingMode: environment`) |
-| State | React Context (TxLineProvider) |
-| PWA | Web App Manifest, `100dvh` + `safe-area-inset` |
-| Solana (Phase 3) | `@solana/web3.js`, `@solana/actions`, Wallet Adapter |
+| Layer            | Technology                                                |
+| ---------------- | --------------------------------------------------------- |
+| Framework        | Next.js 16 (App Router) + TypeScript                      |
+| Styling          | Tailwind CSS 4 + NeonChrome @theme tokens                 |
+| Validation       | Zod (TxLineEventPacket schema)                            |
+| Camera           | Web Media API (`getUserMedia`, `facingMode: environment`) |
+| State            | React Context (TxLineProvider)                            |
+| PWA              | Web App Manifest, `100dvh` + `safe-area-inset`            |
+| Solana (Phase 3) | `@solana/web3.js`, `@solana/actions`, Wallet Adapter      |
 
 ---
 
@@ -158,15 +158,15 @@ TxLINE (mock/source) → TxLineProvider (React Context) → HUD Widgets
 
 BlinkEdge uses a custom **NeonChrome** design language — dark metallic surfaces with glowing neon borders. Depth comes entirely from glow intensity.
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| Canvas | `#0a0a0f` | Page background (never pure black) |
-| Primary | `#00f0ff` (Electric Cyan) | Scoreboard, CTAs, brand accent |
-| Magenta | `#ff00e5` (Hot Magenta) | OddsMatrix, error states |
-| Acid | `#39ff14` (Acid Green) | Consensus indicator, success |
-| Amber | `#ffb800` | Warnings, hedge alerts |
-| Surface | `rgba(10,10,15,0.35)` | HUD widget backgrounds (TV visible through) |
-| Chrome Border | `rgba(255,255,255,0.06)` | Subtle surface dividers |
+| Token         | Value                     | Usage                                       |
+| ------------- | ------------------------- | ------------------------------------------- |
+| Canvas        | `#0a0a0f`                 | Page background (never pure black)          |
+| Primary       | `#00f0ff` (Electric Cyan) | Scoreboard, CTAs, brand accent              |
+| Magenta       | `#ff00e5` (Hot Magenta)   | OddsMatrix, error states                    |
+| Acid          | `#39ff14` (Acid Green)    | Consensus indicator, success                |
+| Amber         | `#ffb800`                 | Warnings, hedge alerts                      |
+| Surface       | `rgba(10,10,15,0.35)`     | HUD widget backgrounds (TV visible through) |
+| Chrome Border | `rgba(255,255,255,0.06)`  | Subtle surface dividers                     |
 
 Typography uses **Inter** (UI, weights 400–800) and **JetBrains Mono** (scores, data). Full design specification at [`DESIGN.md`](./DESIGN.md).
 
@@ -281,6 +281,7 @@ The `TxLineEventPacket` schema (Zod-validated) is the single source of truth:
 ```
 
 The `TxLineSource` interface decouples data ingestion from presentation:
+
 - **Phase 1:** `createMockTxLineSource()` — deterministic seeded PRNG, 2000ms tick
 - **Phase 2+:** Real TxLINE on Solana (implements same interface)
 
@@ -288,12 +289,12 @@ The `TxLineSource` interface decouples data ingestion from presentation:
 
 Pure reducer: `evaluate(prevPacket, curPacket) → RiskAssessment[]`
 
-| Rule | Trigger | Severity | Action |
-|------|---------|----------|--------|
-| `red-card` | New red card event | critical | Hedge alert |
-| `injury` | New injury event | high | Hedge alert |
-| `odds-swing` | `|oddsDelta| > 0.18` | high | Risk warning |
-| `lead-reversal` | Score lead flips | critical | Re-evaluation |
+| Rule            | Trigger            | Severity  | Action        |
+| --------------- | ------------------ | --------- | ------------- |
+| `red-card`      | New red card event | critical  | Hedge alert   |
+| `injury`        | New injury event   | high      | Hedge alert   |
+| `odds-swing`    | `                  | oddsDelta | > 0.18`       | high | Risk warning |
+| `lead-reversal` | Score lead flips   | critical  | Re-evaluation |
 
 Rules are declarative and additive — new rules drop into the `rules[]` array with no refactoring.
 
@@ -311,24 +312,24 @@ Rules are declarative and additive — new rules drop into the `rules[]` array w
 
 ## Performance Budget
 
-| Constraint | Target |
-|-----------|--------|
-| Frame rate | ≥30fps on mid-range mobile (Pixel 4a / iPhone SE 2) |
-| Backdrop-blur | Max **3 concurrent** elements |
-| GPU hints | `will-change: backdrop-filter`, `contain: layout paint` |
-| `<video>` | `object-fit: cover` (GPU-composited, no JS resize) |
-| Tick cadence | 2000ms (TxLINE mock, matches real data rate) |
+| Constraint    | Target                                                  |
+| ------------- | ------------------------------------------------------- |
+| Frame rate    | ≥30fps on mid-range mobile (Pixel 4a / iPhone SE 2)     |
+| Backdrop-blur | Max **3 concurrent** elements                           |
+| GPU hints     | `will-change: backdrop-filter`, `contain: layout paint` |
+| `<video>`     | `object-fit: cover` (GPU-composited, no JS resize)      |
+| Tick cadence  | 2000ms (TxLINE mock, matches real data rate)            |
 
 ---
 
 ## Mobile-First Layout
 
-| Breakpoint | Width | Layout Changes |
-|-----------|-------|----------------|
-| Default (mobile) | ≤425px | Scoreboard full-width top, OddsMatrix collapsed, Consensus full-width bottom |
-| `sm:` | 426–767px | OddsMatrix expands to right-edge |
-| `md:` | 768–1023px | Scoreboard clamps to `max-w-480` centered |
-| `lg:` | ≥1024px | Full desktop framing |
+| Breakpoint       | Width      | Layout Changes                                                               |
+| ---------------- | ---------- | ---------------------------------------------------------------------------- |
+| Default (mobile) | ≤425px     | Scoreboard full-width top, OddsMatrix collapsed, Consensus full-width bottom |
+| `sm:`            | 426–767px  | OddsMatrix expands to right-edge                                             |
+| `md:`            | 768–1023px | Scoreboard clamps to `max-w-480` centered                                    |
+| `lg:`            | ≥1024px    | Full desktop framing                                                         |
 
 Base classes target mobile; `sm:`/`md:`/`lg:` prefixes add layout.
 

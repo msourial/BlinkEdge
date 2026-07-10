@@ -7,7 +7,8 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: true,
-    include: ["lib/**/*.test.ts", "lib/**/*.test.tsx"],
+    // See individual test files for @vitest-environment jsdom directive
+    include: ["lib/**/*.test.ts", "lib/**/*.test.tsx", "app/**/*.test.tsx"],
   },
   resolve: {
     alias: {

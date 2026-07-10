@@ -1,22 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { SerwistProvider } from "@serwist/turbopack/react";
+import { SwUpdateNotification } from "./components/SwUpdateNotification";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["400", "600", "700", "800"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  weight: ["400", "600"],
-});
-
 export const metadata: Metadata = {
-  title: "BlinkEdge — AR/HUD Football Companion",
-  description: "Mobile-first PWA that turns your phone into an AR/HUD companion for World Cup football.",
+  title: "BlinkEdge AR HUD",
+  description: "Live Sports AR Analytics & Hedging",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icon.svg",
@@ -34,13 +23,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-canvas text-ink antialiased">
-        {children}
+    <html lang="en" className="h-full bg-[#0a0a0f]">
+      <body className="h-full min-h-screen bg-[#0a0a0f] text-white antialiased overflow-x-hidden m-0 p-0">
+        <SerwistProvider swUrl="/serwist/sw.js">
+          {children}
+          <SwUpdateNotification />
+        </SerwistProvider>
       </body>
     </html>
   );

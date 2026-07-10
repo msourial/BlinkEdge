@@ -17,3 +17,7 @@ services:
         value: "1"
       - key: PORT
         value: "10000"
+      - key: SPL_HEDGE_MINT_ADDRESS
+        sync: false
+      - key: SPL_VAULT_SECRET_KEY
+        sync: false

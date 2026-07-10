@@ -2,7 +2,12 @@
 
 import { useTxLine } from "@/lib/txline/TxLineProvider";
 
-export function OddsMatrix() {
+interface OddsMatrixProps {
+  onSelectBet: (bet: string) => void;
+  activeBet: string | null;
+}
+
+export function OddsMatrix({ onSelectBet, activeBet }: OddsMatrixProps) {
   const packet = useTxLine();
 
   const odds = packet?.oddsSnapshot;
@@ -11,51 +16,33 @@ export function OddsMatrix() {
   const away = odds?.away.toFixed(2) ?? "1.50";
 
   return (
-    <div
-      className="hud-card hud-card-magenta safe-right absolute right-0 top-1/2 -translate-y-1/2 w-52 sm:w-56"
-      style={{
-        zIndex: 20,
-        borderColor: "var(--color-magenta)",
-        boxShadow:
-          "0 0 6px, 0 0 12px, inset 0 0 8px var(--color-magenta-glow-wide)",
-      }}
-    >
-      <div className="px-4 py-4 sm:px-5">
-        <div
-          className="text-xs font-bold uppercase tracking-wider mb-3 text-halo"
-          style={{ color: "var(--color-magenta)" }}
-        >
-          ODDS
-        </div>
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-ink-muted text-halo font-mono">1</span>
-            <span
-              className="font-mono text-base font-semibold text-halo"
-              style={{ color: "var(--color-ink)" }}
+    <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
+      <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
+        Odds
+      </div>
+      <div className="grid grid-cols-3 gap-2 w-full">
+        {[
+          { label: "1", value: home },
+          { label: "X", value: draw },
+          { label: "2", value: away },
+        ].map((item) => {
+          const isActive = activeBet === item.label;
+          return (
+            <button
+              key={item.label}
+              onClick={() => onSelectBet(item.label)}
+              className={
+                "rounded-xl px-3 py-3 text-center transition-all duration-200 cursor-pointer " +
+                (isActive
+                  ? "bg-cyan-500/20 border border-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.25)]"
+                  : "bg-white/5 hover:bg-white/10 border border-transparent")
+              }
             >
-              {home}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-ink-muted text-halo font-mono">X</span>
-            <span
-              className="font-mono text-base font-semibold text-halo"
-              style={{ color: "var(--color-ink)" }}
-            >
-              {draw}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-ink-muted text-halo font-mono">2</span>
-            <span
-              className="font-mono text-base font-semibold text-halo"
-              style={{ color: "var(--color-ink)" }}
-            >
-              {away}
-            </span>
-          </div>
-        </div>
+              <div className="text-xs font-mono text-slate-500 mb-1">{item.label}</div>
+              <div className="font-mono text-sm font-semibold text-slate-200">{item.value}</div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

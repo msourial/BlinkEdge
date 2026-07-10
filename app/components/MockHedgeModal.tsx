@@ -5,7 +5,14 @@ import { useTxLine } from "@/lib/txline/TxLineProvider";
 
 type HedgeState = "idle" | "alert" | "loading" | "confirmed";
 
-export function MockHedgeModal() {
+interface MockHedgeModalProps {
+  onClose: () => void;
+  betSelection?: string | null;
+  homeTeam?: string;
+  awayTeam?: string;
+}
+
+export function MockHedgeModal({ onClose, betSelection, homeTeam = "Home", awayTeam = "Away" }: MockHedgeModalProps) {
   const packet = useTxLine();
   const [state, setState] = useState<HedgeState>("idle");
 
@@ -27,72 +34,102 @@ export function MockHedgeModal() {
 
   const handleDismiss = () => {
     setState("idle");
+    onClose();
   };
 
+  const odds = packet?.oddsSnapshot;
+  const betOdds =
+    betSelection === "1"
+      ? odds?.home.toFixed(2)
+      : betSelection === "2"
+        ? odds?.away.toFixed(2)
+        : odds?.draw.toFixed(2);
+
+  const betTeam =
+    betSelection === "1" ? homeTeam : betSelection === "2" ? awayTeam : "DRAW";
+
+  // Bet confirmation flow
+  if (betSelection) {
+    return (
+      <div className="absolute inset-0 z-[9999] flex items-end justify-center">
+        <div
+          className="absolute inset-0 bg-black/60"
+          onClick={onClose}
+        />
+        <div className="relative w-full bg-black/60 backdrop-blur-2xl border-t border-white/10 rounded-t-[2.5rem] p-6 animate-slide-up shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Confirm Bet
+            </span>
+            <button
+              onClick={onClose}
+              className="text-slate-500 hover:text-slate-300 transition-colors text-sm"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="bg-white/5 rounded-2xl p-4 mb-4 flex items-center justify-between">
+            <div>
+              <div className="text-xs text-slate-500 font-mono mb-1">
+                {betSelection === "1" ? "HOME" : betSelection === "2" ? "AWAY" : "DRAW"}
+              </div>
+              <div className="font-mono text-xl font-bold text-slate-200">
+                {betTeam}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-slate-500 font-mono mb-1">ODDS</div>
+              <div className="font-mono text-xl font-bold text-cyan-400">
+                {betOdds}x
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={handleHedge}
+            className="w-full py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-all duration-200 bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:shadow-[0_0_20px_rgba(34,211,238,0.3)]"
+          >
+            Place Bet
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Hedge alert flow (existing)
   if (state === "idle") return null;
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center"
-      style={{
-        zIndex: 40,
-        backgroundColor: "rgba(10,10,15,0.85)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-      }}
-    >
-      <div
-        className="hud-card hud-card-amber relative max-w-sm w-full mx-4"
-        style={{
-          borderColor: "var(--color-amber)",
-          boxShadow:
-            "0 0 8px, 0 0 20px, 0 0 40px, inset 0 0 12px var(--color-amber-glow-wide)",
-          backgroundColor: "rgba(10,10,15,0.85)",
-        }}
-      >
-        {/* MOCK HEDGE badge — amber, top-right */}
+    <div className="absolute inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md">
+      <div className="bg-black/60 backdrop-blur-2xl border border-white/10 rounded-2xl max-w-sm w-full mx-4 relative overflow-hidden">
         <div
-          className="absolute -top-3 -right-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
-          style={{
-            backgroundColor: "rgba(255,184,0,0.15)",
-            border: "1px solid var(--color-amber)",
-            color: "var(--color-amber)",
-            boxShadow: "0 0 8px var(--color-amber-glow)",
-          }}
+          className="absolute -top-3 -right-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 border border-amber-500/40 text-amber-400 shadow-[0_0_8px_rgba(255,184,0,0.3)]"
         >
           MOCK HEDGE
         </div>
 
         {state === "alert" && (
           <div className="px-6 py-6 text-center">
-            <div
-              className="text-3xl font-bold mb-2 text-halo"
-              style={{ color: "var(--color-magenta)" }}
-            >
+            <div className="text-3xl font-bold mb-2 text-pink-400">
               ⚠ RED CARD
             </div>
-            <p className="text-sm text-ink-body mb-1 text-halo">
+            <p className="text-sm text-slate-300 mb-1">
               Risk detected at minute 67.
             </p>
-            <p className="text-xs text-ink-muted mb-6 text-halo">
+            <p className="text-xs text-slate-500 mb-6">
               Your position is at risk. Hedge now to limit exposure.
             </p>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={handleDismiss}
-                className="px-4 py-2 text-sm font-semibold rounded-lg border"
-                style={{
-                  borderColor: "var(--color-chrome-border-strong)",
-                  color: "var(--color-ink-muted)",
-                  minHeight: "44px",
-                }}
+                className="px-4 py-2 text-sm font-semibold rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-colors"
               >
                 Dismiss
               </button>
               <button
                 onClick={handleHedge}
-                className="btn-neon btn-neon-amber"
-                style={{ minHeight: "44px" }}
+                className="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:shadow-[0_0_20px_rgba(255,184,0,0.3)] transition-all"
               >
                 Hedge Now
               </button>
@@ -102,20 +139,11 @@ export function MockHedgeModal() {
 
         {state === "loading" && (
           <div className="px-6 py-8 text-center">
-            <div
-              className="font-mono text-sm mb-4 text-halo"
-              style={{ color: "var(--color-amber)" }}
-            >
+            <div className="font-mono text-sm mb-4 text-amber-400">
               Executing hedge…
             </div>
-            <div
-              className="inline-block w-6 h-6 border-2 rounded-full animate-spin"
-              style={{
-                borderColor: "var(--color-amber)",
-                borderTopColor: "transparent",
-              }}
-            />
-            <p className="text-xs text-ink-faint mt-4 text-halo">
+            <div className="inline-block w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+            <p className="text-xs text-slate-500 mt-4">
               (Simulated — no real transaction)
             </p>
           </div>
@@ -123,27 +151,18 @@ export function MockHedgeModal() {
 
         {state === "confirmed" && (
           <div className="px-6 py-6 text-center">
-            <div
-              className="text-3xl font-bold mb-2 text-halo"
-              style={{ color: "var(--color-acid)" }}
-            >
+            <div className="text-3xl font-bold mb-2 text-green-400">
               ✓ Hedged
             </div>
-            <p className="text-sm text-ink-body mb-1 text-halo">
+            <p className="text-sm text-slate-300 mb-1">
               Position hedged successfully.
             </p>
-            <p className="text-xs text-ink-faint mb-6 text-halo">
+            <p className="text-xs text-slate-500 mb-6">
               (Mock — no real on-chain transaction)
             </p>
             <button
               onClick={handleDismiss}
-              className="btn-neon"
-              style={{
-                borderColor: "var(--color-acid)",
-                color: "var(--color-acid)",
-                boxShadow: "0 0 8px, 0 0 20px var(--color-acid-glow)",
-                minHeight: "44px",
-              }}
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white"
             >
               Done
             </button>

@@ -4,17 +4,28 @@ import {
   Transaction,
   SystemProgram,
   ComputeBudgetProgram,
+  Keypair,
 } from "@solana/web3.js";
+import {
+  getAssociatedTokenAddress,
+  createTransferCheckedInstruction,
+  createAssociatedTokenAccountInstruction,
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 
 const DEVNET_RPC = "https://api.devnet.solana.com";
+const HEDGE_AMOUNT = 100_000_000; // 0.1 tokens (9 decimals)
 
-// Devnet "hedge voucher" — a demo keypair that receives a small lamport transfer.
-// In production this would be a real SPL mint. For the hackathon demo, we use a
-// SystemProgram transfer to a fixed devnet address as the on-chain breadcrumb.
-// Replace VOUCHER_RECIPIENT with a real devnet wallet you control.
-const VOUCHER_RECIPIENT = new PublicKey(
-  "11111111111111111111111111111112" // System program as placeholder recipient
-);
+function loadVaultKeypair(): Keypair | null {
+  const secretKey = process.env.SPL_VAULT_SECRET_KEY;
+  if (!secretKey) return null;
+  try {
+    return Keypair.fromSecretKey(Buffer.from(secretKey, "base64"));
+  } catch {
+    return null;
+  }
+}
 
 export class SolanaTransactionService {
   private connection: Connection;
@@ -42,17 +53,56 @@ export class SolanaTransactionService {
     const transaction = new Transaction({
       feePayer: account,
       recentBlockhash: blockhash,
-    }).add(
-      // Priority fee — always set (prevents mempool drops)
+    });
+
+    transaction.add(
       ComputeBudgetProgram.setComputeUnitPrice({ microLamports }),
       ComputeBudgetProgram.setComputeUnitLimit({ units: 200000 }),
-      // Demo transfer — 1000 lamports to voucher recipient (on-chain breadcrumb)
-      SystemProgram.transfer({
-        fromPubkey: account,
-        toPubkey: VOUCHER_RECIPIENT,
-        lamports: 1000,
-      })
     );
+
+    const vaultKeypair = loadVaultKeypair();
+    const mintStr = process.env.SPL_HEDGE_MINT_ADDRESS;
+
+    if (vaultKeypair && mintStr) {
+      const mint = new PublicKey(mintStr);
+      const userAta = await getAssociatedTokenAddress(mint, account);
+      const vaultAta = await getAssociatedTokenAddress(mint, vaultKeypair.publicKey);
+
+      const userAtaInfo = await this.connection.getAccountInfo(userAta);
+      if (!userAtaInfo) {
+        transaction.add(
+          createAssociatedTokenAccountInstruction(
+            account,
+            userAta,
+            account,
+            mint,
+            TOKEN_PROGRAM_ID,
+            ASSOCIATED_TOKEN_PROGRAM_ID,
+          ),
+        );
+      }
+
+      transaction.add(
+        createTransferCheckedInstruction(
+          userAta,
+          mint,
+          vaultAta,
+          account,
+          HEDGE_AMOUNT,
+          9,
+          [],
+          TOKEN_PROGRAM_ID,
+        ),
+      );
+    } else {
+      transaction.add(
+        SystemProgram.transfer({
+          fromPubkey: account,
+          toPubkey: new PublicKey("11111111111111111111111111111112"),
+          lamports: 1000,
+        }),
+      );
+    }
 
     const serialized = transaction.serialize({
       requireAllSignatures: false,
