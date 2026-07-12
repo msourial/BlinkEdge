@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { SerwistProvider } from "@serwist/turbopack/react";
 import { SwUpdateNotification } from "./components/SwUpdateNotification";
 import "./globals.css";
+import "@solana/wallet-adapter-react-ui/styles.css";
 
 export const metadata: Metadata = {
   title: "BlinkEdge AR HUD",

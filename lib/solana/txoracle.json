@@ -1,0 +1,24 @@
+{
+  "version": "0.1.0",
+  "name": "txoracle",
+  "instructions": [
+    {
+      "name": "subscribe",
+      "accounts": [
+        { "name": "user", "isMut": true, "isSigner": true },
+        { "name": "pricingMatrix", "isMut": false, "isSigner": false },
+        { "name": "tokenMint", "isMut": false, "isSigner": false },
+        { "name": "userTokenAccount", "isMut": true, "isSigner": false },
+        { "name": "tokenTreasuryVault", "isMut": true, "isSigner": false },
+        { "name": "tokenTreasuryPda", "isMut": false, "isSigner": false },
+        { "name": "tokenProgram", "isMut": false, "isSigner": false },
+        { "name": "associatedTokenProgram", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "serviceLevelId", "type": "u16" },
+        { "name": "durationWeeks", "type": "u16" }
+      ]
+    }
+  ]
+}

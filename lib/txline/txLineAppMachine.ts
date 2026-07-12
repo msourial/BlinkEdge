@@ -6,6 +6,7 @@ export interface MatchSelection {
 
 export type AppState =
   | { phase: "LOADING" }
+  | { phase: "TXLINE_AUTH" }
   | { phase: "MATCH_SELECT" }
   | { phase: "CAMERA_INIT"; selectedMatch: MatchSelection }
   | { phase: "AR_HUD_LIVE"; selectedMatch: MatchSelection }
@@ -14,6 +15,7 @@ export type AppState =
 
 export type AppAction =
   | { type: "LOADED" }
+  | { type: "API_CONNECTED" }
   | { type: "SELECT_MATCH"; match: MatchSelection }
   | { type: "CAMERA_READY" }
   | { type: "GO_OFFLINE" }
@@ -26,6 +28,16 @@ export function appStateReducer(state: AppState, action: AppAction): AppState {
     case "LOADING":
       switch (action.type) {
         case "LOADED":
+          return { phase: "TXLINE_AUTH" };
+        case "API_ERROR":
+          return { phase: "API_ERROR", error: action.error };
+        default:
+          return state;
+      }
+
+    case "TXLINE_AUTH":
+      switch (action.type) {
+        case "API_CONNECTED":
           return { phase: "MATCH_SELECT" };
         case "API_ERROR":
           return { phase: "API_ERROR", error: action.error };
