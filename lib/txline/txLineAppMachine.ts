@@ -21,7 +21,8 @@ export type AppAction =
   | { type: "GO_OFFLINE" }
   | { type: "API_ERROR"; error: string }
   | { type: "RETRY" }
-  | { type: "GO_BACK" };
+  | { type: "GO_BACK" }
+  | { type: "GO_HOME" };
 
 export function appStateReducer(state: AppState, action: AppAction): AppState {
   switch (state.phase) {
@@ -49,6 +50,8 @@ export function appStateReducer(state: AppState, action: AppAction): AppState {
       switch (action.type) {
         case "SELECT_MATCH":
           return { phase: "CAMERA_INIT", selectedMatch: action.match };
+        case "GO_HOME":
+          return { phase: "TXLINE_AUTH" };
         default:
           return state;
       }
@@ -73,6 +76,8 @@ export function appStateReducer(state: AppState, action: AppAction): AppState {
           return { phase: "OFFLINE" };
         case "GO_BACK":
           return { phase: "MATCH_SELECT" };
+        case "GO_HOME":
+          return { phase: "TXLINE_AUTH" };
         default:
           return state;
       }

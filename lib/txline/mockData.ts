@@ -21,14 +21,20 @@ class SeededPRNG {
   }
 }
 
-const MATCH_ID = "wc-2026-final";
-const HOME_TEAM = "BRA";
-const AWAY_TEAM = "ARG";
 const SEED = 42;
 
-const TEAM_NAMES = ["BRA", "ARG"];
+interface MockSourceOptions {
+  fixtureId?: number | string;
+  homeTeam?: string;
+  awayTeam?: string;
+}
 
-function generatePacket(prng: SeededPRNG, minute: number, prevScore: { home: number; away: number }): TxLineEventPacket {
+function generatePacket(
+  prng: SeededPRNG,
+  minute: number,
+  prevScore: { home: number; away: number },
+  options: Required<MockSourceOptions>,
+): TxLineEventPacket {
   const events: TxLineEvent[] = [];
 
   let score = { ...prevScore };
@@ -37,15 +43,15 @@ function generatePacket(prng: SeededPRNG, minute: number, prevScore: { home: num
     events.push({
       type: "card",
       minute: 67,
-      team: AWAY_TEAM,
+      team: options.awayTeam,
       player: "Player 8",
       cardType: "red",
     });
   }
 
   if (minute > 0 && minute % 22 === 0 && minute < 90) {
-    const scoringTeam = prng.pick(TEAM_NAMES);
-    if (scoringTeam === HOME_TEAM) score.home++;
+    const scoringTeam = prng.pick([options.homeTeam, options.awayTeam]);
+    if (scoringTeam === options.homeTeam) score.home++;
     else score.away++;
     events.push({
       type: "goal",
@@ -58,7 +64,7 @@ function generatePacket(prng: SeededPRNG, minute: number, prevScore: { home: num
     events.push({
       type: "injury",
       minute,
-      team: prng.pick(TEAM_NAMES),
+      team: prng.pick([options.homeTeam, options.awayTeam]),
     });
   }
 
@@ -74,7 +80,7 @@ function generatePacket(prng: SeededPRNG, minute: number, prevScore: { home: num
   const consensusDirection = score.home > score.away ? "home" : score.away > score.home ? "away" : "draw";
 
   return {
-    matchId: MATCH_ID,
+    matchId: String(options.fixtureId),
     timestamp: Date.now(),
     minute,
     score,
@@ -95,7 +101,12 @@ function generatePacket(prng: SeededPRNG, minute: number, prevScore: { home: num
   };
 }
 
-export function createMockTxLineSource(): TxLineSource {
+export function createMockTxLineSource(sourceOptions: MockSourceOptions = {}): TxLineSource & { stop: () => void } {
+  const options = {
+    fixtureId: sourceOptions.fixtureId ?? "wc-2026-final",
+    homeTeam: sourceOptions.homeTeam ?? "Home",
+    awayTeam: sourceOptions.awayTeam ?? "Away",
+  };
   const subscribers = new Set<(packet: TxLineEventPacket) => void>();
   let interval: NodeJS.Timeout | null = null;
   let minute = 0;
@@ -103,7 +114,7 @@ export function createMockTxLineSource(): TxLineSource {
   const prng = new SeededPRNG(SEED);
 
   const tick = () => {
-    const packet = generatePacket(prng, minute, currentScore);
+    const packet = generatePacket(prng, minute, currentScore, options);
     currentScore = { ...packet.score };
     subscribers.forEach((cb) => cb(packet));
     minute = (minute + 2) % 122;
@@ -123,6 +134,13 @@ export function createMockTxLineSource(): TxLineSource {
           interval = null;
         }
       };
+    },
+    stop() {
+      if (interval !== null) {
+        clearInterval(interval);
+        interval = null;
+      }
+      subscribers.clear();
     },
   };
 }

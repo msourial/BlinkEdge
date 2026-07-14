@@ -13,7 +13,7 @@ export function ConnectionStatusProvider({
   children: ReactNode;
   connectionBus: ConnectionEventBus;
 }) {
-  const [state, setState] = useState<ConnectionState>("disconnected");
+  const [state, setState] = useState<ConnectionState>(() => connectionBus.state);
 
   useEffect(() => {
     return connectionBus.subscribe((newState) => setState(newState));

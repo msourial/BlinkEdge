@@ -208,6 +208,28 @@ npm run test:watch  # watch mode
 npm run test:coverage
 ```
 
+### World Cup match archive
+
+The match picker merges a TxLINE fixture snapshot with `data/txodds-world-cup-history.json`. Imported completed scores always win over a fixture snapshot, while live and upcoming fixtures come from TxLINE. The app saves the last valid merged snapshot in the browser and labels cached/stale data instead of silently showing made-up scores.
+
+Import the official TxODDS CSV or JSON export with:
+
+```bash
+npm run import:txodds-archive -- /absolute/path/to/txodds-world-cup.csv
+```
+
+Each row must contain a fixture ID, both teams, kickoff, completed status, and a final score. The command rejects malformed, duplicate, and conflicting fixture IDs and writes an audit report beside the archive. The repository only includes four documented quarter-final results as a verified seed; add the official export to display the complete historical archive.
+
+### Watch-proof points (non-redeemable)
+
+The server endpoints under `/api/rewards` use wallet-signed, short-lived nonces and accept only a challenge result, time window result, coarse geofence boolean, and opaque session nonce. They reject media, exact coordinates, and replayed nonces. Points are off-chain and non-redeemable in this release:
+
+- Stadium — 100 points: HMAC-signed partner ticket/venue QR, coarse geofence, and AR challenge. The server rejects stadium claims until `VENUE_QR_HMAC_SECRET` is configured.
+- TV group — 60 points: a two-minute, capped host QR and AR challenge.
+- TV solo — 30 points: AR challenge during the live-match window.
+
+The included ledger is process-local for development. Before public deployment, replace it with a transactional database and connect the stadium verification boolean only to a ticket/venue partner verifier; do not enable redemption without the required compliance review.
+
 ### Lint
 
 ```bash

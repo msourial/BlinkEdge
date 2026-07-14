@@ -8,7 +8,6 @@ import { TxLineAuthScreen } from "./components/TxLineAuthScreen";
 import { TxLineProvider } from "@/lib/txline/TxLineProvider";
 import { WalletProvider } from "./components/WalletProvider";
 import { RiskEngineProvider } from "@/lib/risk/RiskEngineProvider";
-import { FIXTURE_IDS } from "@/lib/txline/txLineFixtureIds";
 
 export default function Home() {
   const [appState, dispatch] = useReducer(appStateReducer, INITIAL_APP_STATE);
@@ -23,13 +22,24 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (appState.phase !== "CAMERA_INIT") return;
+
+    // Desktop browsers and embedded previews may not expose a camera. Keep the
+    // HUD usable by automatically switching to its camera-free presentation.
+    const timer = setTimeout(() => dispatch({ type: "CAMERA_READY" }), 1_500);
+    return () => clearTimeout(timer);
+  }, [appState.phase]);
+
   const handleAuthSuccess = (jwt: string, apiToken: string) => {
     setAuthTokens({ jwt, apiToken });
     dispatch({ type: "API_CONNECTED" });
   };
 
-  const handleAuthError = (error: string) => {
-    dispatch({ type: "API_ERROR", error });
+  const handleHome = () => {
+    setAuthTokens(null);
+    setActiveBet(null);
+    dispatch({ type: "GO_HOME" });
   };
 
   return (
@@ -44,24 +54,26 @@ export default function Home() {
           )}
 
           {appState.phase === "TXLINE_AUTH" && (
-            <TxLineAuthScreen onSuccess={handleAuthSuccess} onError={handleAuthError} />
+            <TxLineAuthScreen onSuccess={handleAuthSuccess} />
           )}
 
           {appState.phase === "MATCH_SELECT" && (
             <MatchSelector
               appState={appState}
-              onSelectMatch={(matchId) => {
-                const fixture = FIXTURE_IDS.find(f => f.fixtureId === matchId);
+              jwt={authTokens?.jwt}
+              apiToken={authTokens?.apiToken}
+              onSelectMatch={(fixture) => {
                 dispatch({
                   type: "SELECT_MATCH",
                   match: { 
-                    matchId, 
+                    matchId: fixture.fixtureId,
                     homeTeam: fixture?.homeTeam || "Home", 
                     awayTeam: fixture?.awayTeam || "Away" 
                   },
                 });
               }}
               onRetry={() => dispatch({ type: "RETRY" })}
+              onHome={handleHome}
             />
           )}
 
@@ -93,6 +105,7 @@ export default function Home() {
                     setActiveBet(null);
                     dispatch({ type: "GO_BACK" });
                   }}
+                  onHome={handleHome}
                 />
               </TxLineProvider>
             </RiskEngineProvider>

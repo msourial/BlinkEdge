@@ -2,8 +2,12 @@
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { TxLineEventPacket } from "@/lib/schema/txLineSchema";
-import { createTxLineSseSource, type SseSource } from "./txLineSseSource";
+import { createTxLineSseSource } from "./txLineSseSource";
+import type { TxLineSource } from "./TxLineSource";
 import { ConnectionEventBus } from "./txLineConnectionBus";
+import { createMockTxLineSource } from "./mockData";
+import { FIXTURE_IDS } from "./txLineFixtureIds";
+import { ConnectionStatusProvider } from "./useConnectionStatus";
 
 const DEFAULT_FIXTURE_ID = 18209181;
 
@@ -27,21 +31,30 @@ export function TxLineProvider({
 }) {
   const [packet, setPacket] = useState<TxLineEventPacket | null>(null);
   const [connectionBus] = useState(() => new ConnectionEventBus());
-  const sourceRef = useRef<SseSource | null>(null);
+  type ManagedSource = TxLineSource & { stop?: () => void };
+  const sourceRef = useRef<ManagedSource | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    if (sourceRef.current) {
-      sourceRef.current.stop();
-    }
+    sourceRef.current?.stop?.();
 
-    const source = createTxLineSseSource({
-      jwt,
-      apiToken,
-      fixtureId: fixtureId ?? DEFAULT_FIXTURE_ID,
-      onConnectionChange: (state, meta) => connectionBus.setState(state, meta),
-    });
+    const selectedFixture = FIXTURE_IDS.find((entry) => entry.fixtureId === fixtureId);
+    const source = jwt === "demo-jwt"
+      ? createMockTxLineSource({
+          fixtureId: fixtureId ?? DEFAULT_FIXTURE_ID,
+          homeTeam: selectedFixture?.homeTeam,
+          awayTeam: selectedFixture?.awayTeam,
+        })
+      : createTxLineSseSource({
+          jwt,
+          apiToken,
+          fixtureId: fixtureId ?? DEFAULT_FIXTURE_ID,
+          onConnectionChange: (state, meta) => connectionBus.setState(state, meta),
+        });
+    const demoConnectionTimer = jwt === "demo-jwt"
+      ? window.setTimeout(() => connectionBus.setState("connected"), 0)
+      : null;
     sourceRef.current = source;
     const unsubscribe = source.subscribe((p) => {
       if (!cancelled) setPacket(p);
@@ -49,16 +62,17 @@ export function TxLineProvider({
 
     return () => {
       cancelled = true;
-      if (sourceRef.current) {
-        sourceRef.current.stop();
-        sourceRef.current = null;
-      }
+      if (demoConnectionTimer !== null) window.clearTimeout(demoConnectionTimer);
+      sourceRef.current?.stop?.();
+      sourceRef.current = null;
     };
   }, [connectionBus, fixtureId, jwt, apiToken]);
 
   return (
     <TxLineContext.Provider value={{ packet, connectionBus }}>
-      {children}
+      <ConnectionStatusProvider connectionBus={connectionBus}>
+        {children}
+      </ConnectionStatusProvider>
     </TxLineContext.Provider>
   );
 }

@@ -4,9 +4,9 @@ import { appStateReducer, INITIAL_APP_STATE } from "./txLineAppMachine";
 const testMatch = { matchId: 42, homeTeam: "France", awayTeam: "Morocco" };
 
 describe("appStateReducer", () => {
-  it("LOADING + LOADED -> MATCH_SELECT", () => {
+  it("LOADING + LOADED -> TXLINE_AUTH", () => {
     const result = appStateReducer({ phase: "LOADING" }, { type: "LOADED" });
-    expect(result).toEqual({ phase: "MATCH_SELECT" });
+    expect(result).toEqual({ phase: "TXLINE_AUTH" });
   });
 
   it("LOADING + API_ERROR -> API_ERROR", () => {

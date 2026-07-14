@@ -17,8 +17,12 @@ export function OddsMatrix({ onSelectBet, activeBet }: OddsMatrixProps) {
 
   return (
     <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
-      <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
-        Odds
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-200">Match odds</div>
+          <p className="mt-1 text-[10px] text-slate-500">Tap a market to review the position</p>
+        </div>
+        {activeBet && <span className="rounded-full bg-cyan-400/10 px-2 py-1 font-mono text-[10px] text-cyan-200">Selected: {activeBet}</span>}
       </div>
       <div className="grid grid-cols-3 gap-2 w-full">
         {[
@@ -40,6 +44,9 @@ export function OddsMatrix({ onSelectBet, activeBet }: OddsMatrixProps) {
             >
               <div className="text-xs font-mono text-slate-500 mb-1">{item.label}</div>
               <div className="font-mono text-sm font-semibold text-slate-200">{item.value}</div>
+              <div className="mt-1 text-[9px] uppercase tracking-wider text-slate-500">
+                {item.label === "1" ? "Home" : item.label === "2" ? "Away" : "Draw"}
+              </div>
             </button>
           );
         })}

@@ -1,5 +1,35 @@
 import { DEVNET_ORIGIN, AUTH_PATH, ACTIVATE_PATH } from "./txLineFixtureIds";
 
+export function extractApiToken(responseBody: string): string {
+  const trimmedBody = responseBody.trim();
+  if (!trimmedBody) {
+    throw new Error("TxLINE activation returned an empty API token.");
+  }
+
+  try {
+    const parsedBody: unknown = JSON.parse(trimmedBody);
+
+    if (typeof parsedBody === "string" && parsedBody) {
+      return parsedBody;
+    }
+
+    if (
+      typeof parsedBody === "object" &&
+      parsedBody !== null &&
+      "token" in parsedBody &&
+      typeof parsedBody.token === "string" &&
+      parsedBody.token
+    ) {
+      return parsedBody.token;
+    }
+  } catch {
+    // TxLINE can return the activated API token as plain text.
+    return trimmedBody;
+  }
+
+  throw new Error("TxLINE activation returned an invalid API token response.");
+}
+
 export async function getGuestJwt(): Promise<string> {
   const response = await fetch(`${DEVNET_ORIGIN}${AUTH_PATH}`, {
     method: "POST",
@@ -8,7 +38,11 @@ export async function getGuestJwt(): Promise<string> {
   if (!response.ok) {
     throw new Error(`Guest JWT request failed: ${response.status}`);
   }
-  const data = await response.json();
+  const responseBody = await response.text();
+  const data = JSON.parse(responseBody) as { token?: unknown };
+  if (typeof data.token !== "string" || !data.token) {
+    throw new Error("Guest JWT response did not include a token.");
+  }
   return data.token;
 }
 
@@ -29,8 +63,7 @@ export async function activateApiToken(
   if (!response.ok) {
     throw new Error(`API token activation failed: ${response.status}`);
   }
-  const data = await response.json();
-  return data.token;
+  return extractApiToken(await response.text());
 }
 
 export function buildActivationMessage(

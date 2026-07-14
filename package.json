@@ -10,6 +10,7 @@
     "test": "vitest",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage"
+    ,"import:txodds-archive": "node scripts/import-txodds-archive.mjs"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
